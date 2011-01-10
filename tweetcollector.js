@@ -44,3 +44,8 @@ twit.addListener('tweet', function(tweet) {
     sys.puts("wave goodbye... " + resp.statusCode);
   })
   .stream();
+
+//Purge database of old tweets
+setInterval(function(){
+    storage.removeTweetsNotInLast3Hours("tweets");
+}, 300000);
