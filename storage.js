@@ -56,7 +56,18 @@ Storage.getTweetsWithinViewPortInLast3Hours = function(coll_name, location, call
       });
     });
   });
-
-
 }
+
+Storage.removeTweetsNotInLast3Hours = function(coll_name){
+    var client = new Db(DB_NAME, new Server(DB_ADDESS, DB_PORT, {auto_connect: true}));
+  
+  client.open(function(p_client) {
+    client.collection(coll_name, function(err, collection) {
+      collection.remove({'created_at':{$lt : new Date(+ (new Date().getTime() - 10800000))}},function(err, cursor){
+            client.close();
+      });
+    });
+  });
+}
+
 
