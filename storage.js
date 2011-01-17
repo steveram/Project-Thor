@@ -47,7 +47,7 @@ Storage.getTweetsWithinViewPortInLast3Hours = function(coll_name, location, call
     
   client.open(function(p_client) {
     client.collection(coll_name, function(err, collection) {
-      collection.find({"loc" : {"$within" : {"$box" : box}}, 'created_at':{$gt : new Date(+ (new Date().getTime() - 10800000))}},function(err, cursor){
+      collection.find({"loc" : {"$within" : {"$box" : box}}, 'created_at':{$gt : new Date(+ (new Date().getTime() - 10800000))}}, {loc: 1, checkedin: 1, id: 1, place_type:1, full_name: 1},function(err, cursor){
           cursor.toArray(function(err, docs) {
               sys.puts("Returned #" + docs.length + " documents");
               if(typeof callback == "function") callback(docs)
@@ -65,6 +65,21 @@ Storage.removeTweetsNotInLast3Hours = function(coll_name){
     client.collection(coll_name, function(err, collection) {
       collection.remove({'created_at':{$lt : new Date(+ (new Date().getTime() - 10800000))}},function(err, cursor){
             client.close();
+      });
+    });
+  });
+}
+
+Storage.getTweet = function(coll_name, args, callback){
+    var client = new Db(DB_NAME, new Server(DB_ADDESS, DB_PORT, {auto_connect: true}));
+  
+  client.open(function(p_client) {
+    client.collection(coll_name, function(err, collection) {
+      collection.find({"id": args.id}, {image: 1, user: 1, text: 1, created_at: 1},function(err, cursor){
+      cursor.toArray(function(err, docs) {
+             if(typeof callback == "function") callback(docs)
+             client.close();
+          })
       });
     });
   });
