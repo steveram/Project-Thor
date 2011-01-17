@@ -1,0 +1,43 @@
+div.popup{
+	height: auto;
+	min-width: 100px;
+	width: auto;
+	background: #F4F4F4;
+	color: #0084B4;
+	border: 2px solid grey;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	clear: both;
+	display: block;
+	min-height: 60px;
+	outline: none;
+	padding: 3px;
+}
+
+.tweet-image{
+	float: left;
+	height: 48px;
+	margin-top: 3px;
+	overflow: hidden;
+	width: 48px;
+	padding: 4px;
+}
+
+.tweet-content{
+	font-family: MuseoSans, Helvetica;
+	font-size: 0.9em;
+	margin-left: 58px;
+	min-height: 48px;
+	padding-top: 4px;
+	text-shadow: white 0px 1px 0px;
+}
+
+.tweet-row{
+	color: gray;
+	font-size: 0.8em;
+	margin-top: 5px;
+}
+
+.wml-marker{
+	padding: 10px;
+}

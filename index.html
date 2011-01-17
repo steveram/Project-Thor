@@ -6,11 +6,20 @@
   html { height: 100% }
   body { height: 100%; margin: 0px; padding: 0px }
   #cm-example { height: 100% }
-</style>
-    <script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"></script>
+  </style>
+  
+	<link rel="stylesheet" type="text/css" href="/css/main.css" />
+	<script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"></script>
     <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+	<script type = "text/javascript" src = "/js/mustache.js"></script>
+	<script type = "text/javascript" src = "/js/jquery.mustache.js"></script>
+	<script type = "text/javascript" src = "/js/templates.js"></script>
+	<script type = "text/javascript" src = "/js/utils.js"></script>
+
+
+
     <script type = "text/javascript">
-    var swLat, swLng, neLat, neLng, sw, ne, map, clusterer, markers, CloudMadeIcon, redIcon, CLUSTER_LOCATIONS = [];
+    var swLat, swLng, neLat, neLng, sw, ne, map, clusterer, markers, CloudMadeIcon, FourSquareIcon, CLUSTER_LOCATIONS = [];
 
     function initialize(){
         var cloudmade = new CM.Tiles.CloudMade.Web({key: 'BC9A493B41014CAABB98F0471D759707', styleId:999});
@@ -21,10 +30,10 @@
             CloudMadeIcon.iconSize = new CM.Size(32, 32);
             CloudMadeIcon.iconAnchor = new CM.Point(0, 0);
             
-            redIcon = new CM.Icon();
-            redIcon.image = "images/red.gif";
-            redIcon.iconSize = new CM.Size(10, 10);
-            redIcon.iconAnchor = new CM.Point(0, 0);
+            FourSquareIcon = new CM.Icon();
+            FourSquareIcon.image = "images/foursquare.png";
+            FourSquareIcon.iconSize = new CM.Size(20, 20);
+            FourSquareIcon.iconAnchor = new CM.Point(0, 0);
 
         if(navigator.geolocation) {
                 browserSupportFlag = true;
@@ -43,6 +52,7 @@
         }
         
         CM.Event.addListener(map, 'moveend', function(latlng) {
+        	jQuery(".popup").remove();
              $(".wml-marker-pane").html("");
              if(clusterer){
                 clusterer._clusters = {};
@@ -53,48 +63,56 @@
               ne = bounds.getNorthEast();
               getHotSpots();        
           });
-          
     }
     
     
+    function getTweet(id, e){
+ 		var _this = this;
+		$.getJSON("/gettweet", {id: id}, function(response){
+			var data = response.data[0];
+			jQuery(jQuery.mustache(TEMPLATES.Popup, {tweettext: data.text, profile_url:data.image, user: data.user, time: Utils.relativeTime(data.created_at)}))
+				.css({position: "absolute", left: e.pageX + "px", top: (e.pageY - 30) + "px", zIndex: 10000})
+					.attr("id", id)
+						.appendTo("body");
+			
+			jQuery(_this).mouseleave(function(e){
+				jQuery("#" + id).detach();
+			});
+		});
+    }
     function getHotSpots(){
         markers = [];
         var marker;
         $.get("/hotspots", {swLat: sw.lat(), swLng: sw.lng(), neLat : ne.lat(), neLng: ne.lng()}, function(response){
             for(var i in response.data){
-                markers.push(new CM.Marker(new CM.LatLng(response.data[i].loc.lat, response.data[i].loc.long), {icon: CloudMadeIcon}));
-                //map.addOverlay(new CM.Marker(new CM.LatLng(response[i].loc.lat, response[i].loc.long), {icon : redIcon}));
+            	
+            	marker = getMarker(response.data[i]);
+				markers.push(marker);
+
               }
-              clusterer = new CM.MarkerClusterer(map, {clusterRadius: 70});
+              clusterer = new CM.MarkerClusterer(map, {clusterRadius: 50});
               clusterer.addMarkers(markers);
-        });
+              
+              jQuery(".wml-marker").bind("mouseenter", function(e){
+              	var id = jQuery(this).attr("title");
+              	getTweet.call(this, id, e);
+              });
+		});
     }
     
-    /**
-        This updates the global CLUSTER_LOCATIONS which holds an array of
-        Cluster objects. Can be used to find POIs around each cluster
-    */
-    function getClusterLocations(){
-        if(!clusterer) return;
-        CLUSTER_LOCATIONS = [];
-        for(var i in clusterer._clusters){
-            var cluster = {
-                lat: clusterer._clusters[i]._center._lat,
-                lng: clusterer._clusters[i]._center._lng,
-                numTweets: clusterer._clusters[i]._prevLen,
-                zoomLevel : clusterer._clusters[i]._zoom
-            }
-            CLUSTER_LOCATIONS.push(cluster);
-        }
-    }
+	function getMarker(data){
+		var lat = data.loc.lat, lng = data.loc.long;
+		return data.checkedin ? new CM.Marker(new CM.LatLng(lat, lng), {icon: FourSquareIcon, title:data.id}) 
+											: new CM.Marker(new CM.LatLng(lat, lng), {icon: CloudMadeIcon, title:data.id})
+	}
+    		  
     </script>
 </head>
 <body>
-
-  <div id="cm-example" style=""></div>
+<div id="cm-example" style=""></div>
   <script type="text/javascript">
-    $(document).ready(function(){
-        initialize();
+    $(document).ready(function(){            
+		initialize();
     });
   </script>
 </body>

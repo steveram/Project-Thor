@@ -34,6 +34,28 @@ foo.get("/hotspots", function (req, res) {
     });
 });
 
-foo.get("/images/tweet.png", foo.staticHandler("images/tweet.png"));
-foo.get("/images/red.gif", foo.staticHandler("images/red.gif"));
+foo.get("/gettweet", function(req, res){
+    var id = qs.parse(url.parse(req.url).query).id;
+        storage.getTweet('tweets', {id: id}, function(data){
+        	res.simpleJSON(200, {data: data, rss: mem.rss}); 
+    	});
+})
+
+foo.get("/images/tweet.png", foo.staticHandler("assets/images/tweet.png"));
+foo.get("/images/foursquare.png", foo.staticHandler("assets/images/foursquare.png"));
+
+foo.get("/js/mustache.js", foo.staticHandler("assets/js/mustache.js"));
+foo.get("/js/jquery.mustache.js", foo.staticHandler("assets/js/jquery.mustache.js"));
+
+foo.get("/js/templates.js", foo.staticHandler("assets/templates/templates.js"));
+foo.get("/js/utils.js", foo.staticHandler("assets/js/utils.js"));
+
+
+foo.get("/css/main.css", foo.staticHandler("assets/css/main.css"));
+
+
+
+
+
+
 
