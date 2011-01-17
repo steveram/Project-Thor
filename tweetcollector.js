@@ -3,8 +3,8 @@ var TwitterNode = require('twitter-node').TwitterNode,
     storage = require('./storage.js');
     
 var twit = new TwitterNode({
-  user: 'steveram', 
-  password: 'SwimminG8',
+  user: 'projectsapphire', 
+  password: 'yahooers12',
   locations: [-122.75, 36.8, -121.75, 37.8, -74, 40, -73, 41, -118.4, 33.7,-117.4,34.7, -88.3, 41.5, -87.3, 42.5, -117.6, 32.1, -116.6, 33.1] //SF and NY and LA and CHICAGO and SD
 });
 
