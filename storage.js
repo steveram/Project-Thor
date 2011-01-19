@@ -21,6 +21,21 @@ Storage.save = function(coll_name, data) {
   });
 }
 
+Storage.getAllTweets = function(coll_name, callback){
+  var client = new Db(DB_NAME, new Server(DB_ADDESS, DB_PORT, {auto_connect: true}));
+  
+  client.open(function(p_client) {
+    client.collection(coll_name, function(err, collection) {
+      collection.find({loc : { $exists : true } }, {loc: 1}, function(err, cursor){
+          cursor.toArray(function(err, docs) {
+              sys.puts("Returned #" + docs.length + " documents");
+              if(typeof callback == "function") callback(docs)
+              client.close();
+        });
+      });
+    });
+  });
+}
 
 Storage.getTweetsInLastHour = function(coll_name, callback){
   var client = new Db(DB_NAME, new Server(DB_ADDESS, DB_PORT, {auto_connect: true}));
