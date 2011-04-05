@@ -1,0 +1,1 @@
+Visualization of Geo-located Tweets in SF, LA, SD, NY, and Philly. Clusters tweets using k-means algorithm. Uses CloudMade for mapping. Also shows trending Foursquare checkins.
